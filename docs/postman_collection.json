@@ -1,0 +1,242 @@
+{
+ "info": {
+  "_postman_id": "6fac83c2-39f9-4f6e-8cc4-339659f2667c",
+  "name": "Cloud API Integration",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+ },
+ "item": [
+  {
+   "name": "Get access_token",
+   "event": [
+    {
+     "listen": "test",
+     "script": {
+      "id": "34d6fe9e-9660-4b98-bef6-7d527e1362ac",
+      "exec": [
+       "var response = JSON.parse(responseBody);",
+       "",
+       "if(response !== null&&response.result.code==\"0\"){",
+       "    tests[\"Is Success\"] = response.success === true;",
+       "    var msg = \"code: \" + response.result.code + \" msg: \" +response.result.msg;",
+       "    console.log(msg);",
+       "    pm.environment.set('accessToken', response.result.data.accessToken);",
+       "}"
+      ],
+      "type": "text/javascript"
+     }
+    },
+    {
+     "listen": "prerequest",
+     "script": {
+      "id": "45dfe4ee-3c07-4675-ae84-d36a2d6e62b0",
+      "exec": [
+       "(function () { ",
+       "    var timestamp = getTime();",
+       "    pm.environment.set(\"time\",timestamp);",
+       "    var nonce =Math.random().toString(36).substr(2);",
+       "    pm.environment.set('nonce', nonce);",
+       "    var appSecret = pm.environment.get(\"appSecret\");",
+       "    var sign = calcSign(timestamp,nonce,appSecret);",
+       "    pm.environment.set('sign', sign);",
+       "    var id=Math.floor(Math.random() * (50 - 1 + 1) + 1);",
+       "    pm.environment.set('id', id);",
+       "})();",
+       "",
+       "function getTime(){",
+       "    var timestamp = Math.round(new Date().getTime()/1000);",
+       "    return timestamp;",
+       "}",
+       "",
+       "function calcSign(timestamp,nonce,appSecret){",
+       "    var str = \"time:\" + timestamp+\",nonce:\" + nonce +\",appSecret:\" + appSecret;",
+       "    var sign = CryptoJS.MD5( str).toString();",
+       "    return sign;",
+       "}",
+       "",
+       ""
+      ],
+      "type": "text/javascript"
+     }
+    }
+   ],
+   "request": {
+    "method": "POST",
+    "header": [],
+    "body": {
+     "mode": "raw",
+     "raw": "{\r\n \"system\": {\r\n    \"ver\": \"1.0\", \r\n    \"sign\": \"{{sign}}\",\r\n    \"appId\": \"{{appId}}\",\r\n    \"time\": {{time}}, \r\n    \"nonce\": \"{{nonce}}\"\r\n  },\r\n  \"params\": {\r\n  },\r\n  \"id\": \"{{id}}\"\r\n}",
+     "options": {
+      "raw": {
+       "language": "json"
+      }
+     }
+    },
+    "url": {
+     "raw": "{{url}}/accessToken",
+     "host": [
+      "{{url}}"
+     ],
+     "path": [
+      "accessToken"
+     ]
+    }
+   },
+   "response": []
+  },
+  {
+   "name": "Get device list",
+   "event": [
+    {
+     "listen": "prerequest",
+     "script": {
+      "id": "618204a6-b76c-4b53-bd7e-bc84bc531c8c",
+      "exec": [
+       "(function () { ",
+       "    var timestamp = getTime();",
+       "    pm.environment.set(\"time\",timestamp);",
+       "    var nonce =Math.random().toString(36).substr(2);",
+       "    pm.environment.set('nonce', nonce);",
+       "    var appSecret = pm.environment.get(\"appSecret\");",
+       "    var sign = calcSign(timestamp,nonce,appSecret);",
+       "    pm.environment.set('sign', sign);",
+       "    var id=Math.floor(Math.random() * (50 - 1 + 1) + 1);",
+       "    pm.environment.set('id', id);",
+       "})();",
+       "",
+       "function getTime(){",
+       "    var timestamp = Math.round(new Date().getTime()/1000);",
+       "    return timestamp;",
+       "}",
+       "",
+       "function calcSign(timestamp,nonce,appSecret){",
+       "    var str = \"time:\" + timestamp+\",nonce:\" + nonce +\",appSecret:\" + appSecret;",
+       "    var sign = CryptoJS.MD5( str).toString();",
+       "    return sign;",
+       "}",
+       "",
+       ""
+      ],
+      "type": "text/javascript"
+     }
+    },
+    {
+     "listen": "test",
+     "script": {
+      "id": "12d1ce5f-6f30-4b51-97ac-de6bc40b72c0",
+      "exec": [
+       "var response = JSON.parse(responseBody);",
+       "",
+       "if(response !== null&&response.result.code==\"0\"){",
+       "    tests[\"Is Success\"] = response.success === true;",
+       "    var msg = \"code: \" + response.result.code + \" msg: \" +response.result.msg;",
+       "    console.log(msg);",
+       "}"
+      ],
+      "type": "text/javascript"
+     }
+    }
+   ],
+   "request": {
+    "method": "POST",
+    "header": [],
+    "body": {
+     "mode": "raw",
+     "raw": "{\r\n \"system\": {\r\n    \"ver\": \"1.0\", \r\n    \"sign\": \"{{sign}}\",\r\n    \"appId\": \"{{appId}}\",\r\n    \"time\": {{time}}, \r\n    \"nonce\": \"{{nonce}}\"\r\n  },\r\n  \"params\":{\r\n\t\t\"token\":\"{{accessToken}}\", \r\n\t\t\"bindId\":\"-1\", \r\n\t\t\"limit\":128,\r\n\t\t\"type\":\"bindAndShare\",\r\n\t\t\"needApInfo\":\"false\"\r\n    },\r\n  \"id\": \"{{id}}\"\r\n}",
+     "options": {
+      "raw": {
+       "language": "json"
+      }
+     }
+    },
+    "url": {
+     "raw": "{{url}}/deviceOpenList",
+     "host": [
+      "{{url}}"
+     ],
+     "path": [
+      "deviceOpenList"
+     ]
+    }
+   },
+   "response": []
+  },
+  {
+   "name": "Set motion detection switch",
+   "event": [
+    {
+     "listen": "prerequest",
+     "script": {
+      "id": "21a13fac-460f-473b-87ce-2e30eb0ce163",
+      "exec": [
+       "(function () { ",
+       "    var timestamp = getTime();",
+       "    pm.environment.set(\"time\",timestamp);",
+       "    var nonce =Math.random().toString(36).substr(2);",
+       "    pm.environment.set('nonce', nonce);",
+       "    var appSecret = pm.environment.get(\"appSecret\");",
+       "    var sign = calcSign(timestamp,nonce,appSecret);",
+       "    pm.environment.set('sign', sign);",
+       "    var id=Math.floor(Math.random() * (50 - 1 + 1) + 1);",
+       "    pm.environment.set('id', id);",
+       "})();",
+       "",
+       "function getTime(){",
+       "    var timestamp = Math.round(new Date().getTime()/1000);",
+       "    return timestamp;",
+       "}",
+       "",
+       "function calcSign(timestamp,nonce,appSecret){",
+       "    var str = \"time:\" + timestamp+\",nonce:\" + nonce +\",appSecret:\" + appSecret;",
+       "    var sign = CryptoJS.MD5( str).toString();",
+       "    return sign;",
+       "}",
+       "",
+       ""
+      ],
+      "type": "text/javascript"
+     }
+    },
+    {
+     "listen": "test",
+     "script": {
+      "id": "2eb1f3ac-c454-4116-a81b-b7997dd97bf6",
+      "exec": [
+       "var response = JSON.parse(responseBody);",
+       "",
+       "if(response !== null&&response.result.code==\"0\"){",
+       "    tests[\"Is Success\"] = response.success === true;",
+       "    var msg = \"code: \" + response.result.code + \" msg: \" +response.result.msg;",
+       "    console.log(msg);",
+       "}"
+      ],
+      "type": "text/javascript"
+     }
+    }
+   ],
+   "request": {
+    "method": "POST",
+    "header": [],
+    "body": {
+     "mode": "raw",
+     "raw": "{\r\n \"system\": {\r\n    \"ver\": \"1.0\", \r\n    \"sign\": \"{{sign}}\",\r\n    \"appId\": \"{{appId}}\",\r\n    \"time\": {{time}}, \r\n    \"nonce\": \"{{nonce}}\"\r\n  },\r\n  \"params\":{\r\n\t\t\"token\":\"{{accessToken}}\", \r\n\t\t\"deviceId\":\"Enter your device serial number\",\r\n\t\t\"channelId\":\"0\", \r\n\t\t\"enable\":true \r\n    },\r\n  \"id\": \"{{id}}\"\r\n}",
+     "options": {
+      "raw": {
+       "language": "json"
+      }
+     }
+    },
+    "url": {
+     "raw": "{{url}}/modifyDeviceAlarmStatus",
+     "host": [
+      "{{url}}"
+     ],
+     "path": [
+      "modifyDeviceAlarmStatus"
+     ]
+    }
+   },
+   "response": []
+  }
+ ],
+ "protocolProfileBehavior": {}
+}
